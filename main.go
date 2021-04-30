@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/Skycoin/git-telegram-bot/githandler"
-	"github.com/Skycoin/git-twitter-bot/config"
+	"github.com/Skycoin/git-telegram-bot/pkg/githandler"
+	"github.com/Skycoin/git-twitter-bot/internal/config"
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 )

@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/Skycoin/git-telegram-bot/errutil"
+	"github.com/Skycoin/git-telegram-bot/pkg/errutil"
 )
 
 const (
