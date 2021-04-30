@@ -13,17 +13,17 @@ import (
 )
 
 func main() {
-	l := log.New(os.Stdout, "git-twitter-bot", log.LstdFlags)
+	logger := log.New(os.Stdout, "git-twitter-bot", log.LstdFlags)
 
 	cfg, err := config.NewBotConfig()
 	if err != nil {
-		l.Fatal(err)
+		logger.Fatal(err)
 	}
 	oauthCfg := oauth1.NewConfig(cfg.ConsumerKey, cfg.ConsumerSecret)
 	oauthToken := oauth1.NewToken(cfg.AccessToken, cfg.AccessSecret)
-	hc := oauthCfg.Client(oauth1.NoContext, oauthToken)
+	httpClient := oauthCfg.Client(oauth1.NoContext, oauthToken)
 
-	tc := twitter.NewClient(hc)
+	twitterClient := twitter.NewClient(httpClient)
 
 	stopCh := make(chan bool, 1)
 
@@ -32,7 +32,7 @@ func main() {
 	go func() {
 		for range c {
 			// sigterm is a ^C, handle it
-			l.Print("shutting down twitter bot...")
+			logger.Print("shutting down twitter bot...")
 			time.Sleep(3 * time.Second)
 			stopCh <- true
 		}
@@ -51,19 +51,19 @@ func main() {
 			err = githandler.HandleStartCommand(
 				previousEventId,
 				currentEventId,
-				l,
+				logger,
 				cfg.TargetOrgUrl,
 				func(s string) error {
-					tw, res, e := tc.Statuses.Update(s, &twitter.StatusUpdateParams{})
-					if e != nil {
-						return e
+					tweet, res, tweetErr := twitterClient.Statuses.Update(s, &twitter.StatusUpdateParams{})
+					if tweetErr != nil {
+						return tweetErr
 					}
-					l.Printf("Response: %s\n Status updated: %v\n", res.Status, tw)
+					logger.Printf("Response: %s\n Status updated: %v\n", res.Status, tweet)
 					return nil
 				},
 			)
 			if err != nil {
-				l.Print(err)
+				logger.Print(err)
 			}
 		}
 	}
